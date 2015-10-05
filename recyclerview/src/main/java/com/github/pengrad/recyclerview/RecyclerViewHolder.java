@@ -18,7 +18,7 @@ public abstract class RecyclerViewHolder<T> extends RecyclerView.ViewHolder {
             super.itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    itemClickListener.onItemClick(item);
+                    itemClickListener.onItemClick(item, view, getAdapterPosition());
                 }
             });
         }
