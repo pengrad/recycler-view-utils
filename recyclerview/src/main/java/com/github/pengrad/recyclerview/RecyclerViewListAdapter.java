@@ -1,5 +1,6 @@
 package com.github.pengrad.recyclerview;
 
+import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 import android.view.ViewGroup;
 
@@ -16,16 +17,25 @@ public abstract class RecyclerViewListAdapter<T> extends RecyclerView.Adapter<Re
     private ItemClickListener<T> itemClickListener;
     private List<T> data;
 
-    public RecyclerViewListAdapter(ItemClickListener<T> itemClickListener) {
+    public RecyclerViewListAdapter() {
+        this(null);
+    }
+
+    public RecyclerViewListAdapter(@Nullable ItemClickListener<T> itemClickListener) {
         this.itemClickListener = itemClickListener;
         setDataImpl(null);
     }
 
-    private void setDataImpl(List<T> data) {
-        this.data = data != null ? data : new ArrayList<T>(0);
+    private void setDataImpl(@Nullable Collection<T> data) {
+        if (data == null) {
+            this.data = new ArrayList<>(0);
+        } else {
+            this.data = new ArrayList<>(data.size());
+            this.data.addAll(data);
+        }
     }
 
-    public RecyclerViewListAdapter<T> setData(List<T> data) {
+    public RecyclerViewListAdapter<T> setData(Collection<T> data) {
         setDataImpl(data);
         notifyDataSetChanged();
         return this;
@@ -33,6 +43,12 @@ public abstract class RecyclerViewListAdapter<T> extends RecyclerView.Adapter<Re
 
     public RecyclerViewListAdapter<T> add(T item) {
         data.add(item);
+        notifyDataSetChanged();
+        return this;
+    }
+
+    public RecyclerViewListAdapter<T> add(int index, T item) {
+        data.add(index, item);
         notifyDataSetChanged();
         return this;
     }
@@ -56,8 +72,29 @@ public abstract class RecyclerViewListAdapter<T> extends RecyclerView.Adapter<Re
         notifyDataSetChanged();
     }
 
+    public void remove(T item) {
+        data.remove(item);
+    }
+
+    public void remove(int index) {
+        data.remove(index);
+    }
+
+    public void remove(Collection<T> items) {
+        data.remove(items);
+    }
+
+    public List<T> getAll() {
+        return data;
+    }
+
     public T getItem(int position) {
         return data.get(position);
+    }
+
+    @Override
+    public int getItemCount() {
+        return data.size();
     }
 
     @Override
@@ -66,10 +103,5 @@ public abstract class RecyclerViewListAdapter<T> extends RecyclerView.Adapter<Re
     @Override
     public void onBindViewHolder(RecyclerViewHolder<T> holder, int position) {
         holder.onBind(data.get(position), itemClickListener);
-    }
-
-    @Override
-    public int getItemCount() {
-        return data.size();
     }
 }
